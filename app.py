@@ -287,19 +287,10 @@ with ctrl_l:
 with ctrl_c:
     pass  # spacer
 with ctrl_r:
-    btn_l, btn_r = st.columns(2)
-    with btn_l:
-        if st.button("↺ Reset", use_container_width=True):
-            st.session_state["qty_dict"] = {k: 0 for k in all_keys}
-            st.rerun()
-    with btn_r:
-        if st.button("📊 Load observed", use_container_width=True):
-            new_dict = {k: 1.0 for k in all_keys}
-            for _, row in family_catalogue.iterrows():
-                if row["obs"] > 0:
-                    new_dict[row["fam_key"]] = float(row["obs"])
-            st.session_state["qty_dict"] = new_dict
-            st.rerun()
+    if st.button("↺ Reset to 0g", use_container_width=True):
+        for k in all_keys:
+            st.session_state[f"inp__{k}"] = 0.0
+        st.rerun()
 
 st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
