@@ -190,6 +190,7 @@ def compute_plate(qty_dict):
     d["cost"]   = d["qty_g"] * d["prix_pond"] / 100
     d["prot_g"] = d["qty_g"] * d["PROT_DIG"]  / 100
     d["kcal"]   = d["qty_g"] * d["ENERKC"]    / 100
+    d["Fe"] = d["qty_g"] * d["MIN_FE"] / 100
     for env in ["Climate_Change", "Water_Consumption", "Land_competition",
                 "Cumulative_Energy_Demand", "Biodiversity"]:
         d[f"env_{env}"] = d["qty_g"] * d[env] / 100
@@ -266,6 +267,7 @@ def generate_alternative(plate_df, exclude_subgroups):
     result["cost"]   = result["qty_g"] * result["prix_pond"] / 100
     result["prot_g"] = result["qty_g"] * result["PROT_DIG"]  / 100
     result["kcal"]   = result["qty_g"] * result["ENERKC"]    / 100
+    result["Fe"] = result["qty_g"] * result["MIN_FE"] / 100
     for env in ["Climate_Change", "Water_Consumption", "Land_competition",
                 "Cumulative_Energy_Demand", "Biodiversity"]:
         result[f"env_{env}"] = result["qty_g"] * result[env] / 100
@@ -303,13 +305,15 @@ total_kcal = base_plate["kcal"].sum()
 total_prot = base_plate["prot_g"].sum()
 total_cost = base_plate["cost"].sum()
 total_co2  = base_plate["env_Climate_Change"].sum()
+total_Fe = base_plate["Fe"].sum()
 
-k1, k2, k3, k4, k5 = st.columns(5)
+k1, k2, k3, k4, k5, k6 = st.columns(6)
 k1.metric("⚖️ Quantity", f"{total_g:.0f} g")
 k2.metric("🔥 Kcal",     f"{total_kcal:.0f} kcal")
 k3.metric("💪 Proteins", f"{total_prot:.1f} g")
-k4.metric("💶 Price",    f"{total_cost:.2f} €")
-k5.metric("☁️ CO₂",      f"{total_co2:.2f} kg")
+k4.metric("🦾 Iron", f"{total_Fe:.2f} mg")
+k5.metric("💶 Price",    f"{total_cost:.2f} €")
+k6.metric("☁️ CO₂",      f"{total_co2:.2f} kg")
 
 st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
@@ -457,7 +461,8 @@ for i, (scenario_name, scenario_info) in enumerate(scenarios.items()):
         m1, m2 = st.columns(2)
         m1.metric("💶 Price",    f"{alt_df['cost'].sum():.2f} €")
         m2.metric("💪 Proteins", f"{alt_df['prot_g'].sum():.1f} g")
-        st.metric("⚖️ Quantity",  f"{alt_df['qty_g'].sum():.0f} g")
+        m1.metric("⚖️ Quantity",  f"{alt_df['qty_g'].sum():.0f} g")
+        m2.metric("🦾 Iron", f"{alt_df['Fe'].sum():.1f} mg")
 
 # ── ENV COMPARISON CHART ──────────────────────────────────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
