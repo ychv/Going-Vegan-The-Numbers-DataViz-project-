@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import numpy as np
 from scipy.optimize import lsq_linear
 
-# ── PAGE CONFIG ──────────────────────────────────────────────────────────────
+####################### PAGE CONFIG #######################
 st.set_page_config(
     page_title="Going Vegan : The Numbers",
     page_icon="🍽️",
@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ── STYLES ───────────────────────────────────────────────────────────────────
+######################### STYLES ##########################
 st.markdown("""
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@400;500&display=swap');
@@ -95,7 +95,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── LOAD DATA ────────────────────────────────────────────────────────────────
+###################### LOAD DATA ##########################
 @st.cache_data
 def load_data():
     df = pd.read_csv("3_data_v2.csv")
@@ -119,26 +119,26 @@ df = load_data()
 REF_POP = df["pop"].iloc[0]
 pop_df  = df[df["pop"] == REF_POP].copy()
 
-# ── COLOR PALETTES ────────────────────────────────────────────────────────────
+################### COLOR PALETTES ########################
 GROUP_COLORS = {
-    "Meat/fish/egg":            "#B5553A",
-    "Fruits and vegetables":    "#5A8A5E",
-    "Starchy food":             "#C9973A",
-    "Dairy product":            "#7A9EC2",
-    "Fats":                     "#D4A853",
-    "Plant-based alternative":  "#6BAA8E",
+    "Meat/fish/egg":"#B5553A",
+    "Fruits and vegetables":"#5A8A5E",
+    "Starchy food":"#C9973A",
+    "Dairy product":"#7A9EC2",
+    "Fats":"#D4A853",
+    "Plant-based alternative":"#6BAA8E",
 }
 SUBGROUP_COLORS = {
-    "Meat":                      "#B5553A",  "Fish":                "#3E7EA6",
-    "Egg":                       "#E0A84B",  "Cheese":              "#7A9EC2",
-    "Milk":                      "#9AC0D4",  "Yoghurt":             "#5A8AA0",
-    "Starchy food, refined":     "#C9973A",  "Starchy food, unrefined": "#A07828",
-    "Vegetable, soup":           "#5A8A5E",  "Fresh and processed fruits": "#7AB05A",
-    "Plant based proteins":      "#6BAA8E",  "Vegetable fat":       "#D4A853",
-    "Animal fat":                "#B08A5A",
+    "Meat":"#B5553A", "Fish":"#3E7EA6",
+    "Egg":"#E0A84B", "Cheese":"#7A9EC2",
+    "Milk":"#9AC0D4", "Yoghurt":"#5A8AA0",
+    "Starchy food, refined":"#C9973A", "Starchy food, unrefined":"#A07828",
+    "Vegetable, soup":"#5A8A5E", "Fresh and processed fruits":"#7AB05A",
+    "Plant based proteins":"#6BAA8E", "Vegetable fat":"#D4A853",
+    "Animal fat":"#B08A5A",
 }
 
-# ── NUTRIENT COLUMNS ──────────────────────────────────────────────────────────
+##### NUTRIENT COLUMNS (FOR ALTERNATIVE COMPUTATION) ######
 NUTRIENT_COLS = [
     "PROT_DIG", "FIBRES", "GLUCIDES", "LIPIDES",
     "MIN_NA", "MIN_MG", "MIN_P", "MIN_K", "MIN_CA", "MIN_FE",
@@ -162,7 +162,7 @@ NUTRIENT_WEIGHTS = np.array([
     for c in NUTRIENT_COLS
 ])
 
-# ── FAMILY CATALOGUE ─────────────────────────────────────────────────────────
+################### FAMILY CATALOGUE ######################
 _base_cols = ["fam_key", "LIBFAM_DIDIT_eng", "LIBGR_DIDIT_eng", "LIBSGR_DIDIT_eng",
               "prix_pond", "ENERKC", "Climate_Change", "Water_Consumption",
               "Land_competition", "Cumulative_Energy_Demand", "Biodiversity", "obs"]
@@ -176,37 +176,37 @@ family_catalogue = (
 )
 all_keys = family_catalogue["fam_key"].tolist()
 
-# ── PREDEFINED MEALS ─────────────────────────────────────────────────────────
+#################### SAMPLE MEALS #########################
 # fam_key: grams — mapped to actual catalogue keys
 PREDEFINED_MEALS = [
-    {   # Steak légumes patates
+    {
         "name": "Steak, vegetables & potatoes",
         "Meat/fish/egg|Red meat": 180,
         "Fruits and vegetables|Vegetable ": 180,
         "Starchy food|Potato": 200,
         "Fats|Vegetable oil": 15,
     },
-    {   # Riz saumon
+    {
         "name": "Salmon & rice",
         "Meat/fish/egg|Fatty fish": 160,
         "Starchy food|Pasta, rice, semolina": 180,
         "Fruits and vegetables|Vegetable ": 80,
         "Fats|Vegetable oil": 10,
     },
-    {   # Saucisses lentilles
+    {
         "name": "Sausages & lentils",
         "Meat/fish/egg|Delicatessen": 140,
         "Starchy food|Dried vegetable": 220,
         "Fats|Vegetable oil": 10,
     },
-    {   # Poulet crème champignons
+    {
         "name": "Chicken, cream & mushrooms",
         "Meat/fish/egg|Poultry and venison": 180,
         "Fats|Cream": 80,
         "Fruits and vegetables|Vegetable ": 140,
         "Fats|Vegetable oil": 12,
     },
-    {   # Omelette lardons
+    {
         "name": "Bacon omelette",
         "Meat/fish/egg|Egg": 150,
         "Meat/fish/egg|Delicatessen": 70,
@@ -216,7 +216,9 @@ PREDEFINED_MEALS = [
 ]
 
 def init_meal(meal: dict):
-    """Write a predefined meal into qty_dict and inp__ widget keys."""
+    """
+    Write a predefined meal into qty_dict and inp__ widget keys.
+    """
     qty = {k: 0.0 for k in all_keys}
     for fk, g in meal.items():
         if fk == "name":
@@ -227,7 +229,7 @@ def init_meal(meal: dict):
     for k in all_keys:
         st.session_state[f"inp__{k}"] = qty[k]
 
-# ── SESSION STATE INIT ────────────────────────────────────────────────────────
+####################### SESSION INIT ######################
 if "qty_dict" not in st.session_state:
     # Pick a random meal on first load
     meal = PREDEFINED_MEALS[np.random.randint(len(PREDEFINED_MEALS))]
@@ -243,8 +245,13 @@ else:
 if "pending_changes" not in st.session_state:
     st.session_state["pending_changes"] = False
 
-# ── HELPERS ───────────────────────────────────────────────────────────────────
+################## HELPERS FUNCTIONS ######################
 def compute_plate(qty_dict):
+    """
+    Compute total plate based on ingredient
+    quantities dictionnary
+    Returns : dataframe representing the plate
+    """
     d = family_catalogue.copy()
     d["qty_g"] = d["fam_key"].map(qty_dict).fillna(0)
     d = d[d["qty_g"] > 0].copy()
@@ -258,6 +265,10 @@ def compute_plate(qty_dict):
     return d
 
 def make_pie(plate_df, group_col="LIBGR_DIDIT_eng", colors=GROUP_COLORS, height=300):
+    """
+    Plot the plate as a pie chart
+    Returns : pie chart figure
+    """
     grouped = plate_df.groupby(group_col)["qty_g"].sum().reset_index()
     grouped = grouped[grouped["qty_g"] > 0]
     grouped["color"] = grouped[group_col].map(colors).fillna("#888")
@@ -276,7 +287,7 @@ def make_pie(plate_df, group_col="LIBGR_DIDIT_eng", colors=GROUP_COLORS, height=
     )
     return fig
 
-# ── NUTRIENT WEIGHTS — protein/AA dominate, macros soft, B12 minimal ─────────
+## NUTRIENT WEIGHTS FOR ALTERNATIVE COMPUTATION
 _PROTEIN_AA = {
     "PROT_DIG", "LYS_dig", "THR_dig", "LEU_dig", "ILE_dig",
     "VAL_dig", "MET_dig", "CYS_dig", "TRP_dig", "PHE_dig", "TYR_dig", "HIS_dig",
@@ -291,14 +302,14 @@ NUTRIENT_WEIGHTS = np.array([
     for c in NUTRIENT_COLS
 ])
 
-# Per-subgroup upper bounds (g) — prevents condiments from dominating
+# Per-subgroup upper bounds (g) to prevents crazy stuff like 300g of sauce
 SUBGROUP_MAX_G = {
-    "Sauces and spices":         50,
-    "Vegetable fat":             50,
-    "Animal fat":                80,
+    "Sauces and spices": 50,
+    "Vegetable fat": 50,
+    "Animal fat": 80,
     "Dry fruit and oleaginous": 100,
     "Fresh and processed fruits": 300,
-    "Breakfast cereals":         150,
+    "Breakfast cereals": 150,
 }
 DEFAULT_MAX_G = 600.0
 
@@ -307,14 +318,14 @@ def generate_alternative(plate_df, exclude_subgroups):
     """
     Nutritionally equivalent plate using two-phase bounded least-squares.
     Prioritises matching digestible proteins + essential amino acids.
-    Returns (result_df, b12_warning: bool).
+    Returns : result plate dataframe, b12_warning boolean.
     """
     if not exclude_subgroups:
         return plate_df.copy(), False
 
     excl = set(exclude_subgroups)
 
-    # ── 1. Nutrient target ────────────────────────────────────────────────────
+    # Nutrient target
     target = (
         plate_df[NUTRIENT_COLS].values *
         plate_df["qty_g"].values[:, None] / 100.0
@@ -324,7 +335,7 @@ def generate_alternative(plate_df, exclude_subgroups):
         result = plate_df[~plate_df["LIBSGR_DIDIT_eng"].isin(excl)].copy()
         return result, False
 
-    # ── 2. Candidates + per-food bounds ───────────────────────────────────────
+    # Candidates + per-food bounds
     candidates = (
         family_catalogue[~family_catalogue["LIBSGR_DIDIT_eng"].isin(excl)]
         .copy().reset_index(drop=True)
@@ -337,73 +348,73 @@ def generate_alternative(plate_df, exclude_subgroups):
         for _, row in candidates.iterrows()
     ], dtype=float)
 
-    # ── 3. Normalised + weighted system ──────────────────────────────────────
+    # Normalised + weighted system
     A = candidates[NUTRIENT_COLS].values.T / 100.0   # (n_nut, n_foods)
     b = target
-    scales  = np.where(b > 1e-9, b, 1.0)
-    w       = NUTRIENT_WEIGHTS
-    A_norm  = (A / scales[:, None]) * w[:, None]
-    b_norm  = (b / scales) * w
+    scales = np.where(b > 1e-9, b, 1.0)
+    w = NUTRIENT_WEIGHTS
+    A_norm = (A / scales[:, None]) * w[:, None]
+    b_norm = (b / scales) * w
 
-    # ── 4. Phase 1: full solve with tiny ridge ─────────────────────────────────
+    # Phase 1: full solve with tiny ridge
     alpha = 0.005
-    n     = A_norm.shape[1]
+    n = A_norm.shape[1]
     A_aug = np.vstack([A_norm, alpha * np.eye(n)])
     b_aug = np.concatenate([b_norm, np.zeros(n)])
-    res1  = lsq_linear(A_aug, b_aug, bounds=(np.zeros(n), ubs), method="bvls")
-    q1    = res1.x
+    res1 = lsq_linear(A_aug, b_aug, bounds=(np.zeros(n), ubs), method="bvls")
+    q1 = res1.x
 
-    # ── 5. Phase 2: re-solve with top MAX_FOODS ────────────────────────────────
+    # Phase 2: re-solve with top MAX_FOODS
     MAX_FOODS = 10
-    top_idx   = np.argsort(q1)[-MAX_FOODS:]
-    A_sub     = A_norm[:, top_idx]
-    ubs_sub   = ubs[top_idx]
+    top_idx = np.argsort(q1)[-MAX_FOODS:]
+    A_sub = A_norm[:, top_idx]
+    ubs_sub = ubs[top_idx]
     A_sub_aug = np.vstack([A_sub, alpha * np.eye(len(top_idx))])
     b_sub_aug = np.concatenate([b_norm, np.zeros(len(top_idx))])
-    res2      = lsq_linear(A_sub_aug, b_sub_aug,
-                            bounds=(np.zeros(len(top_idx)), ubs_sub), method="bvls")
+    res2 = lsq_linear(A_sub_aug, b_sub_aug, bounds=(np.zeros(len(top_idx)), ubs_sub), method="bvls")
     q_final   = np.zeros(n)
     q_final[top_idx] = res2.x
 
-    # ── 6. Assemble ───────────────────────────────────────────────────────────
+    # Assemble
     result = candidates.copy()
     result["qty_g"] = q_final
     result = result[result["qty_g"] > 0.5].copy()
 
-    result["cost"]   = result["qty_g"] * result["prix_pond"] / 100
+    result["cost"] = result["qty_g"] * result["prix_pond"] / 100
     result["prot_g"] = result["qty_g"] * result["PROT_DIG"]  / 100
-    result["kcal"]   = result["qty_g"] * result["ENERKC"]    / 100
-    result["Fe"]     = result["qty_g"] * result["MIN_FE"]    / 100
-    for env in ["Climate_Change", "Water_Consumption", "Land_competition",
-                "Cumulative_Energy_Demand", "Biodiversity"]:
+    result["kcal"] = result["qty_g"] * result["ENERKC"]    / 100
+    result["Fe"] = result["qty_g"] * result["MIN_FE"]    / 100
+    for env in ["Climate_Change", "Water_Consumption", "Land_competition", "Cumulative_Energy_Demand", "Biodiversity"]:
         result[f"env_{env}"] = result["qty_g"] * result[env] / 100
 
-    # ── 7. B12 warning ────────────────────────────────────────────────────────
-    b12_idx      = NUTRIENT_COLS.index("VIT_B12")
-    achieved_b12 = (
-        result[NUTRIENT_COLS].values * result["qty_g"].values[:, None] / 100
-    ).sum(axis=0)[b12_idx]
-    b12_warning  = (
-        target[b12_idx] > 0.1 and
-        achieved_b12 / max(target[b12_idx], 1e-9) < 0.3
-    )
+    # B12 warning
+    b12_idx = NUTRIENT_COLS.index("VIT_B12")
+    achieved_b12 = (result[NUTRIENT_COLS].values * result["qty_g"].values[:, None] / 100).sum(axis=0)[b12_idx]
+    b12_warning  = (target[b12_idx] > 0.1 and achieved_b12 / max(target[b12_idx], 1e-9) < 0.3)
     return result, b12_warning
 
-# ── SCENARIOS ─────────────────────────────────────────────────────────────────
+################### ALTERNATIVES PLATES ###################
 scenarios = {
-    "🥩 Current plate": {"exclude": [],     "color": "#B5553A", "desc": "Current composition"},
-    "🐟 No meat":        {"exclude": ["Meat"],                   "color": "#3E7EA6", "desc": "Meat excluded"},
-    "🥚 No fish":        {"exclude": ["Fish", "Meat"],           "color": "#E0A84B", "desc": "Meat & fish excluded"},
-    "🌱 Full vegan":     {"exclude": ["Meat", "Fish", "Egg", "Cheese", "Milk",
-                                       "Yoghurt", "Animal fat", "Milk based dessert"],
-                          "color": "#6BAA8E", "desc": "All animal products excluded"},
+    "🥩 Current plate": {"exclude": [], "color": "#B5553A", "desc": "Current composition"},
+    "🐟 No meat": {"exclude": ["Meat"], "color": "#3E7EA6", "desc": "Meat excluded"},
+    "🥚 No fish": {"exclude": ["Fish", "Meat"], "color": "#E0A84B", "desc": "Meat & fish excluded"},
+    "🌱 Full vegan": {"exclude": ["Meat", "Fish", "Egg", "Cheese", "Milk", "Yoghurt", "Animal fat", "Milk based dessert"], 
+                      "color": "#6BAA8E", "desc": "All animal products excluded"},
 }
 
-# ── HEADER ────────────────────────────────────────────────────────────────────
+######################## HEADER ###########################
 st.markdown(
     '<div style="text-align:center;margin-bottom:0.5rem">'
     '<div style="margin:0;font-size:2rem;font-weight:300;letter-spacing:-1px;color:#f0e4c8;'
     'font-family:\'Crimson Pro\',Georgia,serif">Going Vegan : the Numbers to help you decide</div>'
+    '<div style="margin-top:0.6rem;font-size:1rem;font-weight:300;color:#9a7e5a;'
+    'font-family:\'Crimson Pro\',Georgia,serif;font-style:italic;max-width:700px;'
+    'margin-left:auto;margin-right:auto;line-height:1.6">'
+    'This interactive dashboard is made for helping people see what a transition to a no-meat, '
+    'vegetarian, or vegan diet would look like by finding more environmental and animal friendly '
+    'alternatives to their favorite meals… without compromising on health ! Choose a sample meal or ' \
+    'create your own using the editor on the right, and see the alternative below and their environmental impacts.'
+    '</div>'
     '</div>',
     unsafe_allow_html=True
 )
@@ -438,42 +449,42 @@ with ctrl_r:
 
 st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-# ── COMPUTE PLATE (from committed qty_dict) ────────────────────────────────────
+######## COMPUTE PLATE (from committed qty_dict) ##########
 base_plate = compute_plate(st.session_state["qty_dict"])
 
-# ── KPI ROW ───────────────────────────────────────────────────────────────────
-total_g    = base_plate["qty_g"].sum()
+########################## KPI ROW ########################
+total_g = base_plate["qty_g"].sum()
 total_kcal = base_plate["kcal"].sum()
 total_prot = base_plate["prot_g"].sum()
 total_cost = base_plate["cost"].sum()
-total_co2  = base_plate["env_Climate_Change"].sum()
-total_Fe   = base_plate["Fe"].sum()
+total_co2 = base_plate["env_Climate_Change"].sum()
+total_Fe = base_plate["Fe"].sum()
 
 k1, k2, k3, k4, k5, k6 = st.columns(6)
 k1.metric("⚖️ Quantity", f"{total_g:.0f} g")
-k2.metric("🔥 Kcal",     f"{total_kcal:.0f} kcal")
+k2.metric("🔥 Kcal", f"{total_kcal:.0f} kcal")
 k3.metric("💪 Proteins", f"{total_prot:.1f} g")
-k4.metric("🦾 Iron",     f"{total_Fe:.2f} mg")
-k5.metric("💶 Price",    f"{total_cost:.2f} €")
-k6.metric("☁️ CO₂",      f"{total_co2:.2f} kg")
+k4.metric("🦾 Iron", f"{total_Fe:.2f} mg")
+k5.metric("💶 Price", f"{total_cost:.2f} €")
+k6.metric("☁️ CO₂", f"{total_co2:.2f} kg")
 
 st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-# ── THREE-COLUMN LAYOUT ───────────────────────────────────────────────────────
+################### THREE-COLUMN LAYOUT ###################
 col_left, col_center, col_right = st.columns([1.0, 1.8, 1.4])
 
-# ── LEFT: legend ──────────────────────────────────────────────────────────────
+###################### LEFT: legend #######################
 with col_left:
     st.markdown('<div class="section-title">Legend</div>', unsafe_allow_html=True)
-    grp_col   = "LIBSGR_DIDIT_eng" if show_subgroup else "LIBGR_DIDIT_eng"
-    color_map = SUBGROUP_COLORS     if show_subgroup else GROUP_COLORS
+    grp_col = "LIBSGR_DIDIT_eng" if show_subgroup else "LIBGR_DIDIT_eng"
+    color_map = SUBGROUP_COLORS if show_subgroup else GROUP_COLORS
 
     groups_in_data = base_plate.groupby(grp_col)["qty_g"].sum().sort_values(ascending=False)
     groups_in_data = groups_in_data[groups_in_data > 0]
 
     for grp_name, grp_g in groups_in_data.items():
         pct = grp_g / total_g * 100 if total_g > 0 else 0
-        c   = color_map.get(grp_name, "#888")
+        c = color_map.get(grp_name, "#888")
         st.markdown(
             f'<div style="background:#1a1208;border:1px solid #2a1f10;border-radius:8px;'
             f'padding:7px 12px;margin:4px 0;display:flex;align-items:center;gap:8px">'
@@ -484,14 +495,11 @@ with col_left:
             unsafe_allow_html=True
         )
 
-# ── CENTER: pie ───────────────────────────────────────────────────────────────
+##################### CENTER : current plate ##############
 with col_center:
     st.markdown('<div class="section-title">Current plate</div>', unsafe_allow_html=True)
     pie_colors = SUBGROUP_COLORS if show_subgroup else GROUP_COLORS
-    st.plotly_chart(
-        make_pie(base_plate, grp_col, colors=pie_colors),
-        use_container_width=True, config={"displayModeBar": False}, key="pie_main"
-    )
+    st.plotly_chart(make_pie(base_plate, grp_col, colors=pie_colors),use_container_width=True, config={"displayModeBar": False}, key="pie_main")
     hint_color = "#C9973A" if st.session_state["pending_changes"] else "#6b5538"
     hint_text  = "── PENDING CHANGES — PRESS VALIDATE ──" if st.session_state["pending_changes"] \
                  else "── EDIT QUANTITIES ON THE RIGHT ──"
@@ -501,9 +509,9 @@ with col_center:
         unsafe_allow_html=True
     )
 
-# ── RIGHT: plate editor ────────────────────────────────────────────────────────
+##################### RIGHT: plate editor #################
 with col_right:
-    # Validate button — prominent at top of editor
+    # Validate button
     v_col, _ = st.columns([1, 1])
     with v_col:
         if st.button("✓ Validate quantities", use_container_width=True, key="validate_btn"):
@@ -532,8 +540,8 @@ with col_right:
                 unsafe_allow_html=True
             )
             for _, fam_row in fams.iterrows():
-                fk      = fam_row["fam_key"]
-                fam     = fam_row["LIBFAM_DIDIT_eng"]
+                fk = fam_row["fam_key"]
+                fam = fam_row["LIBFAM_DIDIT_eng"]
                 display = fam if len(fam) <= 28 else fam[:26] + "…"
 
                 nc, ic = st.columns([2, 1])
@@ -556,7 +564,7 @@ with col_right:
                     if abs(new_val - committed.get(fk, 0.0)) > 0.01:
                         st.session_state["pending_changes"] = True
 
-# ── DIVIDER ───────────────────────────────────────────────────────────────────
+####################### DIVIDER ###########################
 st.markdown("""
 <div style="display:flex;align-items:center;gap:16px;margin:2rem 0 1rem">
   <div style="flex:1;height:1px;background:#2a1f10"></div>
@@ -566,7 +574,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── INFO BANNER ───────────────────────────────────────────────────────────────
+#################### INFO BANNER ##########################
 st.markdown(
     '<div class="info-banner">'
     '<b>How alternatives are calculated</b> — Each alternative plate is optimised to '
@@ -580,13 +588,13 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ── COMPUTE ALL SCENARIOS ─────────────────────────────────────────────────────
+################# COMPUTE ALL SCENARIOS ###################
 scenario_results = {}
 for sname, sinfo in scenarios.items():
     alt_df, b12_warn = generate_alternative(base_plate, sinfo["exclude"])
     scenario_results[sname] = {"df": alt_df, "b12_warn": b12_warn, **sinfo}
 
-# ── ALTERNATIVE PLATES ────────────────────────────────────────────────────────
+#################### ALTERNATIVE PLATES ###################
 alt_cols = st.columns(4)
 for i, (scenario_name, sdata) in enumerate(scenario_results.items()):
     with alt_cols[i]:
@@ -611,15 +619,13 @@ for i, (scenario_name, sdata) in enumerate(scenario_results.items()):
 
         fig_mini = make_pie(alt_df, "LIBGR_DIDIT_eng", colors=GROUP_COLORS, height=190)
         fig_mini.update_layout(margin=dict(t=4, b=4, l=4, r=4))
-        st.plotly_chart(fig_mini, use_container_width=True,
-                        config={"displayModeBar": False},
-                        key=f"pie_scenario_{i}")
+        st.plotly_chart(fig_mini, use_container_width=True, config={"displayModeBar": False}, key=f"pie_scenario_{i}")
 
         m1, m2 = st.columns(2)
-        m1.metric("💶 Price",    f"{alt_df['cost'].sum():.2f} €")
+        m1.metric("💶 Price", f"{alt_df['cost'].sum():.2f} €")
         m2.metric("💪 Proteins", f"{alt_df['prot_g'].sum():.1f} g")
         m1.metric("⚖️ Quantity", f"{alt_df['qty_g'].sum():.0f} g")
-        m2.metric("🦾 Iron",     f"{alt_df['Fe'].sum():.2f} mg")
+        m2.metric("🦾 Iron", f"{alt_df['Fe'].sum():.2f} mg")
 
         if sdata.get("b12_warn"):
             st.markdown(
@@ -630,7 +636,7 @@ for i, (scenario_name, sdata) in enumerate(scenario_results.items()):
                 unsafe_allow_html=True
             )
 
-        # ── Food list ─────────────────────────────────────────────────────────
+        # Food list
         if not alt_df.empty:
             foods_sorted = alt_df.sort_values("qty_g", ascending=False)
             with st.expander(f"{len(foods_sorted)} ingredients selected", expanded=False):
@@ -649,15 +655,15 @@ for i, (scenario_name, sdata) in enumerate(scenario_results.items()):
                         unsafe_allow_html=True
                     )
 
-# ── ENV COMPARISON — one chart per metric ─────────────────────────────────────
+################ ENV IMPACTS COMPARISON ###################
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown('<div class="section-title">Environmental impact comparison</div>',
             unsafe_allow_html=True)
 
 env_metrics = {
-    "Climate_Change":           ("☁️ CO₂ eq.", "kg"),
-    "Water_Consumption":        ("💧 Water",   "L"),
-    "Land_competition":         ("🌱 Land use","m²"),
+    "Climate_Change": ("☁️ CO₂ eq.", "kg"),
+    "Water_Consumption": ("💧 Water",   "L"),
+    "Land_competition": ("🌱 Land use","m²"),
     "Cumulative_Energy_Demand": ("⚡ Energy cost",  "MJ"),
 }
 env_scales = {
@@ -669,8 +675,8 @@ env_cols = st.columns(4)
 for col_idx, (env_col, (env_label, env_unit)) in enumerate(env_metrics.items()):
     scale = env_scales[env_col]
     x_labels = list(scenario_results.keys())
-    y_vals   = []
-    colors_  = []
+    y_vals = []
+    colors_ = []
     for sname, sdata in scenario_results.items():
         adf = sdata["df"]
         val = adf[f"env_{env_col}"].sum() * scale if not adf.empty else 0
@@ -683,21 +689,17 @@ for col_idx, (env_col, (env_label, env_unit)) in enumerate(env_metrics.items()):
         hovertemplate="%{x}<br>" + env_label + ": <b>%{y:.2f} " + env_unit + "</b><extra></extra>",
     ))
     fig.update_layout(
-        title=dict(text=f"{env_label} ({env_unit})", font=dict(color="#9a7e5a", size=12),
-                   x=0.5, xanchor="center"),
+        title=dict(text=f"{env_label} ({env_unit})", font=dict(color="#9a7e5a", size=12), x=0.5, xanchor="center"),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         height=240, margin=dict(t=40, b=20, l=10, r=10),
-        xaxis=dict(color="#9a7e5a", tickfont=dict(size=9), gridcolor="#1a1208",
-                   tickangle=-20),
+        xaxis=dict(color="#9a7e5a", tickfont=dict(size=9), gridcolor="#1a1208", tickangle=-20),
         yaxis=dict(color="#9a7e5a", tickfont=dict(size=10), gridcolor="#2a1f10"),
         showlegend=False,
     )
     with env_cols[col_idx]:
-        st.plotly_chart(fig, use_container_width=True,
-                        config={"displayModeBar": False},
-                        key=f"env_chart_{col_idx}")
+        st.plotly_chart(fig, use_container_width=True,config={"displayModeBar": False}, key=f"env_chart_{col_idx}")
 
-# ── FOOTER ────────────────────────────────────────────────────────────────────
+########################## FOOTER #########################
 st.markdown("""
 <div style="text-align:center;margin-top:2rem;padding-top:1rem;border-top:1px solid #1a1208">
   <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:#6b5538">
