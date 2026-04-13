@@ -569,7 +569,7 @@ st.markdown("""
 # ── INFO BANNER ───────────────────────────────────────────────────────────────
 st.markdown(
     '<div class="info-banner">'
-    '🧮 <b>How alternatives are calculated</b> — Each alternative plate is optimised to '
+    '<b>How alternatives are calculated</b> — Each alternative plate is optimised to '
     'match your meal\'s nutrient content as closely as possible, using bounded least-squares on '
     '<b>36 nutritional dimensions</b>: digestible proteins, macronutrients (carbohydrates, '
     'lipids, fibre), essential amino acids (Lys, Thr, Leu, Ile, Val, Met, Cys, Trp…), '
@@ -629,6 +629,25 @@ for i, (scenario_name, sdata) in enumerate(scenario_results.items()):
                 '</div>',
                 unsafe_allow_html=True
             )
+
+        # ── Food list ─────────────────────────────────────────────────────────
+        if not alt_df.empty:
+            foods_sorted = alt_df.sort_values("qty_g", ascending=False)
+            with st.expander(f"{len(foods_sorted)} ingredients selected", expanded=False):
+                for _, row in foods_sorted.iterrows():
+                    c = GROUP_COLORS.get(row["LIBGR_DIDIT_eng"], "#888")
+                    st.markdown(
+                        f'<div style="display:flex;align-items:center;gap:8px;'
+                        f'padding:4px 0;border-bottom:1px solid #1a1208">'
+                        f'<div style="width:6px;height:6px;border-radius:50%;'
+                        f'background:{c};flex-shrink:0"></div>'
+                        f'<span style="color:#b09a78;font-size:12px;flex:1">'
+                        f'{row["LIBFAM_DIDIT_eng"]}</span>'
+                        f'<span style="color:#6b5538;font-size:11px;'
+                        f'font-family:\'DM Mono\',monospace">{row["qty_g"]:.0f}g</span>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
 
 # ── ENV COMPARISON — one chart per metric ─────────────────────────────────────
 st.markdown("<br>", unsafe_allow_html=True)
