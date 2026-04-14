@@ -624,7 +624,8 @@ for i, (scenario_name, sdata) in enumerate(scenario_results.items()):
         m1, m2 = st.columns(2)
         m1.metric("💶 Price", f"{alt_df['cost'].sum():.2f} €")
         m2.metric("💪 Proteins", f"{alt_df['prot_g'].sum():.1f} g")
-        m1.metric("⚖️ Quantity", f"{alt_df['qty_g'].sum():.0f} g")
+        # m1.metric("⚖️ Quantity", f"{alt_df['qty_g'].sum():.0f} g")
+        m1.metric("🔥 Kcal", f"{alt_df['kcal'].sum():.0f} kcal")
         m2.metric("🦾 Iron", f"{alt_df['Fe'].sum():.2f} mg")
 
         if sdata.get("b12_warn"):
